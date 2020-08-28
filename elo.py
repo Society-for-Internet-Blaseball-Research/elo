@@ -21,6 +21,7 @@ for root, dirs, files in os.walk('game-data'):
 ratings = collections.defaultdict(lambda: 1500)
 day_ratings = collections.defaultdict(dict)
 correct = 0
+official_correct = 0
 total = 0
 for (season, day), data in sorted(days.items()):
     for game in data:
@@ -40,6 +41,8 @@ for (season, day), data in sorted(days.items()):
         total += 1
         if abs(e_a - s_a) <= 0.5:
             correct += 1
+        if abs(game['awayOdds'] - s_a) <= 0.5:
+            official_correct += 1
 
         day_ratings[(season, day)][away] = r_a_new
         day_ratings[(season, day)][home] = r_h_new
@@ -47,4 +50,5 @@ for (season, day), data in sorted(days.items()):
         ratings[home] = r_h_new
 
 pprint(sorted(ratings.items(), key=lambda x: x[1], reverse=True))
-print(f'accuracy: {correct / total}')
+print(f'our model accuracy:      {correct / total}')
+print(f'official model accuracy: {official_correct / total}')
