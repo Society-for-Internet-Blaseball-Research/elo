@@ -20,9 +20,8 @@ for root, dirs, files in os.walk('game-data'):
 
 ratings = collections.defaultdict(lambda: 1500)
 day_ratings = collections.defaultdict(dict)
-correct = 0
-official_correct = 0
-total = 0
+our_model = [0, 0]
+official_model = [0, 0]
 for (season, day), data in sorted(days.items()):
     for game in data:
         away = game['awayTeamNickname']
@@ -38,11 +37,15 @@ for (season, day), data in sorted(days.items()):
         r_a_new = r_a + model['K'] * (s_a - e_a)
         r_h_new = r_h + model['K'] * (s_h - e_h)
 
-        total += 1
+        our_model[1] += 1
         if abs(e_a - s_a) <= 0.5:
-            correct += 1
-        if abs(game['awayOdds'] - s_a) <= 0.5:
-            official_correct += 1
+            our_model[0] += 1
+
+        # ignore official odds that weren't calculated due to the data loss
+        if not (season == 3 and (day == 87 or day == 88)):
+            official_model[1] += 1
+            if abs(game['awayOdds'] - s_a) <= 0.5:
+                official_model[0] += 1
 
         day_ratings[(season, day)][away] = r_a_new
         day_ratings[(season, day)][home] = r_h_new
@@ -50,5 +53,5 @@ for (season, day), data in sorted(days.items()):
         ratings[home] = r_h_new
 
 pprint(sorted(ratings.items(), key=lambda x: x[1], reverse=True))
-print(f'our model accuracy:      {correct / total}')
-print(f'official model accuracy: {official_correct / total}')
+print(f'our model accuracy:      {our_model[0] / our_model[1]}')
+print(f'official model accuracy: {official_model[0] / official_model[1]}')
