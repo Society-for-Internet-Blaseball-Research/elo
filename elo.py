@@ -10,10 +10,10 @@ model = {
     'mean': 1500,
 
     # Elo K factor
-    'K': 7,
+    'K': 10,
 
     # Revert to mean factor between seasons
-    'seasonRevertFactor': 0,
+    'seasonRevertFactor': 0.2,
 
     # Pitcher's game score multipliers
     'gamescore': {
